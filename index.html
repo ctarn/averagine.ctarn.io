@@ -1,0 +1,109 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Averagine Model</title>
+<style>
+* {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: dimgrey;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: darkcyan;
+}
+
+div.wrapper {
+    width: 800px;
+    margin: 16px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    margin: 16px auto;
+}
+
+main {
+    width: 100%;
+    min-height: 520px;
+    margin: 16px auto;
+}
+
+footer {
+    width: 100%;
+    margin: 16px auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+header {
+    height: 64px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+header img {
+    height: 100%;
+}
+
+canvas, input {
+    width: 100%;
+    margin: 16px auto;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/chart.umd.min.js"></script>
+<script src="./model.js"></script>
+</head>
+<body>
+<div class="wrapper">
+<header><img src="fig/Averagine.svg" alt="logo"/><h1>Averagine Model</h1></header>
+<main>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <input type="range" id="mass" min="1" max="19999" value="10000" step="1" onchange="plot()">
+</main>
+<footer>
+    <span><a href="http://ctarn.io">http://ctarn.io</a></span>
+    <span>Copyright &copy; Tarn Yeong Ching</span>
+    <span><a href="mailto:i@ctarn.io">i@ctarn.io</a></span></footer>
+</div>
+</body>
+<script>
+    const ctx = document.getElementById("canvas").getContext("2d")
+    const chart = new Chart(ctx, {
+        type: "bar",
+        data: {datasets: [{backgroundColor: "darkcyan"}]},
+        options: {
+            plugins: {legend: {display: false}},
+            scales: {
+                x: {title: {display: true, text: "Mass (Da)"},},
+                y: {
+                    title: {display: true, text: "Abundance"},
+                    ticks: {callback: (value, index, ticks) => { return value + "%" }},
+                    beginAtZero: true,
+                },
+            },
+        },
+    })
+    function plot() {
+        mass = parseFloat(document.getElementById("mass").value)
+        labels = []
+        data = []
+        v = V[Math.floor(mass / 10)]
+        for (var i = 0; i < v.length; ++i) {
+            labels.push(`#${i + 1}: ${mass + i}`)
+            data.push(v[i] * 100)
+        }
+        chart.data.datasets[0].data = data
+        chart.data.labels = labels
+        chart.update()
+    }
+    const args = new URLSearchParams(window.location.search);
+    document.getElementById("mass").value = args.has("mass") ? parseInt(args.get("mass")) : 10000
+    plot()
+</script>
+</html>
