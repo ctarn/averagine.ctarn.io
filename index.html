@@ -12,42 +12,43 @@ h1, h2, h3, h4, h5, h6 {
     color: darkcyan;
 }
 
-div.wrapper {
-    width: 800px;
-    margin: 16px auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-header {
+body, header, main, footer {
     width: 100%;
-    text-align: center;
-    margin: 16px auto;
+    margin: 0;
+    padding: 0;
 }
 
-main {
+div.header, div.main, div.footer {
+    box-sizing: border-box;
     width: 100%;
-    min-height: 520px;
-    margin: 16px auto;
+    max-width: 800px;
+    min-width: 400px;
+    margin: 0 auto;
+    padding: 4px;
 }
 
-footer {
-    width: 100%;
-    margin: 16px auto;
-    display: flex;
-    justify-content: space-around;
-}
-
-header {
-    height: 64px;
+div.header {
+    height: 60px;
     display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-header img {
+div.main {
+    min-height: 600px;
+    padding: 16px;
+}
+
+div.footer {
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+div.header img {
     height: 100%;
 }
 
@@ -60,50 +61,59 @@ canvas, input {
 <script src="./model.js"></script>
 </head>
 <body>
-<div class="wrapper">
-<header><img src="fig/Averagine.svg" alt="logo"/><h1>Averagine Model</h1></header>
-<main>
-    <canvas id="canvas" width="600" height="400"></canvas>
-    <input type="range" id="mass" min="1" max="19999" value="10000" step="1" onchange="plot()">
-</main>
-<footer>
-    <span><a href="http://ctarn.io">http://ctarn.io</a></span>
-    <span>Copyright &copy; Tarn Yeong Ching</span>
-    <span><a href="mailto:i@ctarn.io">i@ctarn.io</a></span></footer>
+<header>
+<div class="header">
+<img src="fig/Averagine.svg" alt="logo"/><h1>Averagine Model</h1>
 </div>
+</header>
+
+<main>
+<div class="main">
+<canvas id="canvas" width="600" height="400"></canvas>
+<input type="range" id="mass" min="1" max="19999" value="10000" step="1" onchange="plot()">
+</div>
+</main>
+
+<footer>
+<div class="footer">
+<span><a href="http://ctarn.io">http://ctarn.io</a></span>
+<span>Copyright &copy; Tarn Yeong Ching</span>
+<span><a href="mailto:i@ctarn.io">i@ctarn.io</a></span>
+</div>
+</footer>
 </body>
 <script>
-    const ctx = document.getElementById("canvas").getContext("2d")
-    const chart = new Chart(ctx, {
-        type: "bar",
-        data: {datasets: [{backgroundColor: "darkcyan"}]},
-        options: {
-            plugins: {legend: {display: false}},
-            scales: {
-                x: {title: {display: true, text: "Mass (Da)"},},
-                y: {
-                    title: {display: true, text: "Abundance"},
-                    ticks: {callback: (value, index, ticks) => { return value + "%" }},
-                    beginAtZero: true,
-                },
+const ctx = document.getElementById("canvas").getContext("2d")
+const chart = new Chart(ctx, {
+    type: "bar",
+    data: {datasets: [{backgroundColor: "darkcyan"}]},
+    options: {
+        plugins: {legend: {display: false}},
+        scales: {
+            x: {title: {display: true, text: "Mass (Da)"},},
+            y: {
+                title: {display: true, text: "Abundance"},
+                ticks: {callback: (value, index, ticks) => { return value + "%" }},
+                beginAtZero: true,
             },
         },
-    })
-    function plot() {
-        mass = parseFloat(document.getElementById("mass").value)
-        labels = []
-        data = []
-        v = V[Math.floor(mass / 10)]
-        for (var i = 0; i < v.length; ++i) {
-            labels.push(`#${i + 1}: ${mass + i}`)
-            data.push(v[i] * 100)
-        }
-        chart.data.datasets[0].data = data
-        chart.data.labels = labels
-        chart.update()
+    },
+})
+function plot() {
+    var mass = parseFloat(document.getElementById("mass").value)
+    var labels = []
+    var data = []
+    var v = V[Math.floor(mass / 10)]
+    for (var i = 0; i < v.length; ++i) {
+        labels.push(`#${i + 1}: ${mass + i}`)
+        data.push(v[i] * 100)
     }
-    const args = new URLSearchParams(window.location.search);
-    document.getElementById("mass").value = args.has("mass") ? parseInt(args.get("mass")) : 10000
-    plot()
+    chart.data.datasets[0].data = data
+    chart.data.labels = labels
+    chart.update()
+}
+const args = new URLSearchParams(window.location.search);
+document.getElementById("mass").value = args.has("mass") ? parseInt(args.get("mass")) : 10000
+plot()
 </script>
 </html>
